@@ -1,0 +1,9 @@
+*.pyc
+.project
+.pydevproject
+.settings
+service.pidaproject
+db.sqlite3
+live_settings.py
+deployment_instructions
+media/upload/*
