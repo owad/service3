@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, DeleteView
 from django import template
 from django.template import loader, RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
@@ -147,19 +147,19 @@ class CommentAddView(CreateView):
             if new_status == Product.READY:
                 product.fixed_by = self.request.user.id
             new_comment.set_comment_type(int(self.request.POST['status_change']))
-        json = simplejson.dumps({'success': True, 'data': ''})
+        data = json.dumps({'success': True, 'data': ''})
         if save: 
             product.save()
             new_comment.status = product.status
             new_comment.save()
-        return HttpResponse(json)
+        return HttpResponse(data)
     
     def form_invalid(self, form):
         html = loader.render_to_string(self.template_name, 
                                        dictionary=self.get_context_data(form=form), 
                                        context_instance=RequestContext(self.request))
-        json = simplejson.dumps({'success': False, 'data': html})
-        return HttpResponse(json)
+        data = json.dumps({'success': False, 'data': html})
+        return HttpResponse(data)
     
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.kwargs['product_id']})
@@ -221,3 +221,12 @@ class ProductFileDeleteView(DeleteView):
     
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.kwargs['product_id']})
+
+
+def print_preview(request, product_id):
+    if request.user.is_authenticated() == False:
+        return HttpResponseRedirect(reverse('product-list'))
+
+    product = get_object_or_404(Product, pk=product_id)
+    data = {'product': product, 'client': product.client, 'comment_list': product.comment_set.all()}
+    return render_to_response('product/print.html', data, RequestContext(request))

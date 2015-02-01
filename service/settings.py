@@ -56,16 +56,6 @@ ROOT_URLCONF = 'service.urls'
 WSGI_APPLICATION = 'service.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -94,3 +84,19 @@ TEMPLATE_DIRS = (BASE_DIR + '/templates',)
 UPLOAD_URL = 'media_files'
 PRODUCTS_PER_PAGE = 50
 CLIENTS_PER_PAGE = 50
+
+
+# Database
+# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+
+if DEBUG:
+    DATABASES = {
+            'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'company',
+            'USER': 'root',
+            'PASSWORD': 'root',
+        }
+    }
+else:
+    from live_settings import *

@@ -16,7 +16,7 @@
     </tr>
     {% for product in product_list %}
     <tr class="{% cycle 'row1' 'row2' %} {% if product.client.is_subscriber %}subscriber-color{% endif %}" 
-        {% if product.get_alert %} style="background-color: {{ product.get_alert }};" {% endif %} 
+        {% if product %} " style="background-color: {#{ product.get_alert }#};" {% endif %} 
         onclick="window.location.href='{% url 'product-details' product.id %}'">
         <td>{{ product.id }}</td>
         <td>{{ product.client }}</td>

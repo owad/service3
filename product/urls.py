@@ -15,5 +15,6 @@ urlpatterns = patterns('product.views',
     url(r'^komenatrz/usun/(?P<pk>\d+)$', login_required(CommentDeleteView.as_view()), name='comment-del'),
     url(r'^zgloszenie/(?P<pk>\d+)/pliki/dodaj/$', login_required(ProductFileAddView.as_view()), name='product-file-add'),
     url(r'^zgloszenie/(?P<product_id>\d+)/plik/pobierz/(?P<pk>\d+)/$', login_required(get_file), name='product-get-file'),
-    url(r'^zgloszenie/(?P<product_id>\d+)/plik/usun/(?P<pk>\d+)/$', login_required(ProductFileDeleteView.as_view()), name='product-delete-file')
+    url(r'^zgloszenie/(?P<product_id>\d+)/plik/usun/(?P<pk>\d+)/$', login_required(ProductFileDeleteView.as_view()), name='product-delete-file'),
+    url(r'^zgloszenie/drukuj/(?P<product_id>\d+)/$', 'print_preview', name='product-print'),
 )

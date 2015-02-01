@@ -4,12 +4,10 @@ from django import template
 register = template.Library()
 
 def pln(value, arg='zł'):
-    return 'FIX ME#1'
     if value: return str(value) + arg
     else: return '-'
 
 def comment_costs(obj, arg='zł'):
-    return 'FIX ME#2'
     to_join = []
     get_data = False
     for cost in [['sprzęt', obj.hardware], ['usługa', obj.software], ['dojazd', obj.transport]]:

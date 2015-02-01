@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import ListView

@@ -1,6 +1,8 @@
 # -* - coding: utf-8 -*-
-from datetime import datetime, timedelta
+from decimal import Decimal
 
+from django.utils import timezone
+from django.utils.timezone import datetime, timedelta
 from django.db import models
 from django.db.models import Sum, Count
 
@@ -126,16 +128,15 @@ class Product(models.Model):
         return self.get_status_name(status=key)
 
     def get_hardware_cost(self):
-        return self.comment_set.aggregate(sum=Sum('hardware'))['sum']
+        return self.comment_set.aggregate(sum=Sum('hardware'))['sum'] or Decimal(0)
         
     def get_software_cost(self):
-        return self.comment_set.aggregate(sum=Sum('software'))['sum']
+        return self.comment_set.aggregate(sum=Sum('software'))['sum'] or Decimal(0)
 
     def get_transport_cost(self):
-        return self.comment_set.aggregate(sum=Sum('transport'))['sum']
+        return self.comment_set.aggregate(sum=Sum('transport'))['sum'] or Decimal(0)
 
     def get_cost(self):
-        return 'FIX ME#3'
         return self.get_hardware_cost() + self.get_software_cost() + self.get_transport_cost()
 
     def get_cost_totals(self):
@@ -176,12 +177,12 @@ class Product(models.Model):
     def get_alert(self):
         if self.updated_by_someone():
             return '#33ff33'
-        if datetime.now() - timedelta(days=10) > self.updated and self.status == self.EXTERNAL:
+        if timezone.now() - timedelta(days=10) > self.updated and self.status == self.EXTERNAL:
             return '#ff6666'
-        if datetime.now() - timedelta(days=7) > self.updated \
+        if timezone.now() - timedelta(days=7) > self.updated \
             and self.status in (self.READY,):
             return '#ff3333'
-        if datetime.now() - timedelta(days=3) > self.updated \
+        if timezone.now() - timedelta(days=3) > self.updated \
             and self.status in (self.NEW, self.PROCESSING, self.COURIER):
             return '#ff0000'
         return ''
