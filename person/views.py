@@ -14,7 +14,6 @@ from django.conf import settings
 
 from product.views import ProductListView
 from .models import Client
-# from .forms import ClientFrom
 
 
 class ClientListView(ListView):

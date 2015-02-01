@@ -6,7 +6,6 @@ from django.utils.timezone import timedelta
 from django.db import models
 from django.db.models import Sum, Count
 
-# from gadjo.requestprovider.signals import get_request
 
 from person.models import User, Client
 from django.conf import settings
