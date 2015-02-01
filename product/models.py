@@ -2,11 +2,11 @@
 from decimal import Decimal
 
 from django.utils import timezone
-from django.utils.timezone import datetime, timedelta
+from django.utils.timezone import timedelta
 from django.db import models
 from django.db.models import Sum, Count
 
-#from gadjo.requestprovider.signals import get_request
+# from gadjo.requestprovider.signals import get_request
 
 from person.models import User, Client
 from django.conf import settings
@@ -15,13 +15,12 @@ from .managers import OutdatedManager
 
 
 class Courier(models.Model):
-    
     name = models.CharField(max_length='64')
-    
+
     class Meta:
         verbose_name_plural = "kurierzy"
         verbose_name = "kurier"
-    
+
     def __unicode__(self):
         return self.name
 
@@ -31,9 +30,10 @@ class Product(models.Model):
     NEW, PROCESSING, COURIER = ('przyjety', 'w_realizacji', 'do_wyslania')
     EXTERNAL, BACK, READY, CLOSED = ('w_serwisie', 'z_serwisu', 'do_wydania', 'wydany')
     STATUSES = (NEW, PROCESSING, COURIER, EXTERNAL, BACK, READY, CLOSED)
-    
+
     NEW_NICE, PROCESSING_NICE, COURIER_NICE = ('przyjęty', 'w realizacji', 'do wysłania')
-    EXTERNAL_NICE, BACK_NICE, READY_NICE, CLOSED_NICE = ('w serwisie zew.', 'odebrano z serwisu zew.', 'do wydania', 'wydany')
+    EXTERNAL_NICE, BACK_NICE, READY_NICE, CLOSED_NICE = (
+    'w serwisie zew.', 'odebrano z serwisu zew.', 'do wydania', 'wydany')
     STATUS_CHOICES = (
         (NEW, NEW_NICE),
         (PROCESSING, PROCESSING_NICE),
@@ -43,15 +43,15 @@ class Product(models.Model):
         (READY, READY_NICE),
         (CLOSED, CLOSED_NICE)
     )
-    
+
     IN_PROGRESS = (PROCESSING, COURIER, EXTERNAL, BACK, READY)
-    
+
     FIRST_STATUS = NEW
     LAST_STATUS = CLOSED
-    
+
     Y, N = ('Y', 'N')
     Y_NICE, N_NICE = ('Tak', 'Nie')
-    WARRANTY_CHOICES = ( 
+    WARRANTY_CHOICES = (
         (N, N_NICE),
         (Y, Y_NICE)
     )
@@ -65,7 +65,8 @@ class Product(models.Model):
     status = models.CharField(choices=STATUS_CHOICES, max_length=32)
     parcel_number = models.CharField(max_length=64, blank=True, verbose_name='numer przesyłki')
     external_service_name = models.CharField(max_length=128, blank=True, verbose_name='nazwa serwisu zewnętrznego')
-    max_cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='koszt naprawy do', default=DECIMAL_ZERO)
+    max_cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='koszt naprawy do',
+                                   default=DECIMAL_ZERO)
     warranty = models.CharField(choices=WARRANTY_CHOICES, max_length=16, verbose_name='gwarancja')
     courier = models.IntegerField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name='data zgłoszenia')
@@ -86,28 +87,29 @@ class Product(models.Model):
         break_on_next = False
         next_status = self.FIRST_STATUS
         if self.status == self.LAST_STATUS: return self.LAST_STATUS
-        if self.status == '': return self.FIRST_STATUS
-        else: 
+        if self.status == '':
+            return self.FIRST_STATUS
+        else:
             for key, status in self.STATUS_CHOICES:
-                if (break_on_next): 
+                if (break_on_next):
                     next_status = key
                     break;
                 if key == self.status: break_on_next = True
             return next_status
 
     def set_next_status(self, request):
-        old_status = self.status 
+        old_status = self.status
         POST = request.POST
         if 'status_change' in POST and int(POST['status_change']) == 1 and self.status == self.PROCESSING:
             self.status = Product.READY
-        else: 
+        else:
             self.status = self.get_next_status()
         if old_status == self.COURIER:
             self.parcel_number = POST['parcel_number']
             self.courier = POST['courier']
         return self.status
 
-    def get_status_name(self, status = None):
+    def get_status_name(self, status=None):
         if status:
             key = status
         else:
@@ -116,7 +118,7 @@ class Product(models.Model):
             if key == statuses[0]:
                 return statuses[1]
         return self.FIRST_STATUS
-    
+
     def get_next_status_name(self):
         return self.get_status_name(self.get_next_status())
 
@@ -129,7 +131,7 @@ class Product(models.Model):
 
     def get_hardware_cost(self):
         return self.comment_set.aggregate(sum=Sum('hardware'))['sum'] or Decimal(0)
-        
+
     def get_software_cost(self):
         return self.comment_set.aggregate(sum=Sum('software'))['sum'] or Decimal(0)
 
@@ -152,9 +154,10 @@ class Product(models.Model):
         return ''
 
     def get_warranty_name(self):
-        if self.warranty == self.N: 
+        if self.warranty == self.N:
             return self.N_NICE
-        else: return self.Y_NICE
+        else:
+            return self.Y_NICE
 
     def save(self, *args, **kwargs):
         if self.warranty is None: self.warranty = self.N
@@ -180,10 +183,10 @@ class Product(models.Model):
         if timezone.now() - timedelta(days=10) > self.updated and self.status == self.EXTERNAL:
             return '#ff6666'
         if timezone.now() - timedelta(days=7) > self.updated \
-            and self.status in (self.READY,):
+                and self.status in (self.READY,):
             return '#ff3333'
         if timezone.now() - timedelta(days=3) > self.updated \
-            and self.status in (self.NEW, self.PROCESSING, self.COURIER):
+                and self.status in (self.NEW, self.PROCESSING, self.COURIER):
             return '#ff0000'
         return ''
 
@@ -313,7 +316,6 @@ class Comment(models.Model):
 
 
 class File(models.Model):
-
     product = models.ForeignKey(Product, blank=True)
     obj = models.FileField(upload_to=settings.UPLOAD_URL, verbose_name='plik', blank=True)
     title = models.CharField(max_length=100, verbose_name='nazwa', blank=True)

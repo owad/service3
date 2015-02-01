@@ -2,7 +2,7 @@
 <div>{{ product.client.first_name }} {{ product.client.last_name }}</div>
 <div>{{ product.client.company_name }}</div>
 {% for line in product.client.get_address_lines %}
-<div>{{ line }}</div>
+    <div>{{ line }}</div>
 {% endfor %}
 <div>{{ product.client.email }}</div>
 <div>{{ product.client.get_phone_numbers }}</div>
@@ -11,5 +11,5 @@
     <a class="button" href="{% url 'client-details' product.client.id %}">Lista zgłoszeń</a>
 </div>
 <script type="text/javascript">
-$("#client-edit").fancybox();
+    $("#client-edit").fancybox();
 </script>

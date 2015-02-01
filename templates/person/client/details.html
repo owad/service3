@@ -1,28 +1,28 @@
 {% extends 'product/list.html' %}
 {% block title %} {{ block.super }} - {{ client }} {% endblock %}
 {% block content %}
-<h2>Dane klienta {{ client }}</h2>
-<div class="client-details">
-    <div>{{ client.first_name }} {{ client.last_name }}</div>
-    <div>{{ client.company_name }}</div>
-    {% for line in client.get_address_lines %}
-        <div>{{ line }}</div>
-    {% endfor %}
-    <div>{{ client.get_phone_numbers }}</div>
-    <div>{{ client.email }}</div>
-    
-    <div class="product-add-link">
-        <a class="button" href="{% url 'product-add' client.id %}">nowe&nbsp;zgłoszenie</a>
-        <a class="button" id="client-edit" href="{% url 'client-edit' client.id %}">edycja&nbsp;danych</a>
-    </div>
-</div>
-{{ block.super }}
-<div class="return-link">
-    <a class="button" href="{% url 'client-list' %}">powrót</a>
-</div>
-<div class="clearBoth"></div> 
+    <h2>Dane klienta {{ client }}</h2>
+    <div class="client-details">
+        <div>{{ client.first_name }} {{ client.last_name }}</div>
+        <div>{{ client.company_name }}</div>
+        {% for line in client.get_address_lines %}
+            <div>{{ line }}</div>
+        {% endfor %}
+        <div>{{ client.get_phone_numbers }}</div>
+        <div>{{ client.email }}</div>
 
-<script type="text/javascript">
-$("#client-edit").fancybox();
-</script>
+        <div class="product-add-link">
+            <a class="button" href="{% url 'product-add' client.id %}">nowe&nbsp;zgłoszenie</a>
+            <a class="button" id="client-edit" href="{% url 'client-edit' client.id %}">edycja&nbsp;danych</a>
+        </div>
+    </div>
+    {{ block.super }}
+    <div class="return-link">
+        <a class="button" href="{% url 'client-list' %}">powrót</a>
+    </div>
+    <div class="clearBoth"></div>
+
+    <script type="text/javascript">
+        $("#client-edit").fancybox();
+    </script>
 {% endblock %}

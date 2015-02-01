@@ -6,7 +6,6 @@ import django.core.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('auth', '0001_initial'),
     ]
@@ -24,8 +23,12 @@ class Migration(migrations.Migration):
                 ('city', models.CharField(max_length=128, verbose_name='miejscowość', blank=True)),
                 ('postcode', models.CharField(max_length=8, verbose_name='kod pocztowy', blank=True)),
                 ('email', models.EmailField(max_length=75, verbose_name='e-mail', blank=True)),
-                ('phone_number', models.CharField(max_length=9, validators=[django.core.validators.RegexValidator('^(\\d{9})$')], verbose_name='telefon')),
-                ('second_phone_number', models.CharField(max_length=9, validators=[django.core.validators.RegexValidator('^(\\d{9})$')], verbose_name='telefon dodatkowy', blank=True)),
+                ('phone_number',
+                 models.CharField(max_length=9, validators=[django.core.validators.RegexValidator('^(\\d{9})$')],
+                                  verbose_name='telefon')),
+                ('second_phone_number',
+                 models.CharField(max_length=9, validators=[django.core.validators.RegexValidator('^(\\d{9})$')],
+                                  verbose_name='telefon dodatkowy', blank=True)),
                 ('is_subscriber', models.BooleanField(verbose_name='abonament serwisowy', default=False)),
                 ('created', models.DateTimeField(auto_now_add=True, verbose_name='data utworzenia')),
             ],

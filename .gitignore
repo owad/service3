@@ -7,3 +7,4 @@ db.sqlite3
 live_settings.py
 deployment_instructions
 media/upload/*
+.idea

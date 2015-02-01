@@ -1,9 +1,7 @@
-import logging
 import json
 
 from django.conf import settings
-from django.views.generic import ListView, DetailView
-from django.views.generic.base import RedirectView
+from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView
 from django import template
 from django.template import loader, RequestContext
@@ -16,8 +14,6 @@ from product.models import Product, Comment, Courier, File
 from product.forms import ProductForm, CommentForm, StaffCommentForm, CourierCommentForm, FileForm
 from person.models import Client
 
-from datetime import datetime, timedelta
-
 register = template.Library()
 
 
@@ -25,7 +21,7 @@ class ProductDetailView(CreateView):
     template_name = 'product/details.html'
     queryset = Product.objects.all()
     success_url = 'product-details'
-    
+
     def get_context_data(self, **kwargs):
         data = CreateView.get_context_data(self, **kwargs)
         product = get_object_or_404(Product, pk=self.kwargs['pk'])
@@ -37,7 +33,7 @@ class ProductDetailView(CreateView):
         data['comment_form'] = CommentForm(initial={'user': self.request.user, 'product': product})
         data['hardware_comment_form'] = CommentForm(initial={'user': self.request.user, 'product': product})
         return data
-    
+
     def get_initial(self):
         init = CreateView.get_initial(self)
         init['product'] = self.get_context_data()['product']
@@ -50,36 +46,36 @@ class ProductListView(ListView):
     queryset = None
     template_name = 'product/list.html'
     paginate_by = settings.PRODUCTS_PER_PAGE
-    
+
     def get(self, request, *args, **kwargs):
         if self.get_queryset().count() == 1 and self.get_search_query():
             return HttpResponseRedirect(reverse('product-details', kwargs={'pk': self.get_queryset()[0].id}))
         return ListView.get(self, request, *args, **kwargs)
-    
+
     def get_context_data(self, **kwargs):
         context = super(ProductListView, self).get_context_data(**kwargs)
         products = Product()
         context['counts'] = products.get_counts()
         return context
-    
+
     def get_queryset(self):
         q = self.get_search_query()
         if q:
             if q.isdigit():
                 return Product.objects.filter(id=q)
             else:
-                return Product.objects.filter(Q(name__icontains=q)|
-                                              Q(producent__icontains=q)|
-                                              Q(serial__icontains=q)|
+                return Product.objects.filter(Q(name__icontains=q) |
+                                              Q(producent__icontains=q) |
+                                              Q(serial__icontains=q) |
                                               Q(parcel_number__icontains=q)).filter(status__in=Product.IN_PROGRESS)
         return Product.objects.get_by_status_and_user(self.get_status(), self.request.user)
-    
+
     def get_status(self):
         if 'status' in self.kwargs:
             return self.kwargs['status']
         else:
             return ''
-    
+
     def get_search_query(self):
         q = None
         if 'q' in self.request.GET and self.request.GET['q']:
@@ -93,18 +89,18 @@ class ProductAddView(CreateView):
     form_class = ProductForm
     success_url = 'product-details'
     new_id = None
-    
+
     def get_context_data(self, **kwargs):
         context_data = CreateView.get_context_data(self, **kwargs)
         context_data['client'] = get_object_or_404(Client, pk=self.kwargs['pk'])
         return context_data
-    
+
     def get_form_kwargs(self):
         kwargs = CreateView.get_form_kwargs(self)
         kwargs['initial']['user'] = self.request.user
         kwargs['initial']['client'] = get_object_or_404(Client, pk=self.kwargs['pk'])
         return kwargs
-    
+
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.object.id})
 
@@ -113,18 +109,18 @@ class CommentAddView(CreateView):
     template_name = "comment/add.html"
     form_class = CommentForm
     success_url = 'product-details'
-    
+
     def get_form_kwargs(self):
         kwargs = CreateView.get_form_kwargs(self)
         kwargs['initial']['user'] = self.request.user
         kwargs['initial']['product'] = get_object_or_404(Product, pk=self.kwargs['product_id'])
         return kwargs
-    
+
     def get_context_data(self, **kwargs):
         context_data = CreateView.get_context_data(self, **kwargs)
         context_data['product'] = get_object_or_404(Product, pk=self.kwargs['product_id'])
         return context_data
-    
+
     def get_form(self, form_class):
         product = self.get_context_data()['product']
         if product.status == Product.COURIER:
@@ -134,7 +130,7 @@ class CommentAddView(CreateView):
         else:
             form_class = CommentForm
         return CreateView.get_form(self, form_class)
-    
+
     def form_valid(self, form):
         product = get_object_or_404(Product, pk=self.request.POST['product'])
         new_comment = form.save(commit=False)
@@ -148,19 +144,19 @@ class CommentAddView(CreateView):
                 product.fixed_by = self.request.user.id
             new_comment.set_comment_type(int(self.request.POST['status_change']))
         data = json.dumps({'success': True, 'data': ''})
-        if save: 
+        if save:
             product.save()
             new_comment.status = product.status
             new_comment.save()
         return HttpResponse(data)
-    
+
     def form_invalid(self, form):
-        html = loader.render_to_string(self.template_name, 
-                                       dictionary=self.get_context_data(form=form), 
+        html = loader.render_to_string(self.template_name,
+                                       dictionary=self.get_context_data(form=form),
                                        context_instance=RequestContext(self.request))
         data = json.dumps({'success': False, 'data': html})
         return HttpResponse(data)
-    
+
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.kwargs['product_id']})
 
@@ -169,17 +165,17 @@ class CommentDeleteView(DeleteView):
     template_name = "comment/delete.html"
     model = Comment
     success_url = 'product-details'
-    
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         id = self.object.product.id
         if (request.user.is_staff and self.object.type == self.object.HARDWARE_ADD) or (request.user.is_superuser):
             self.object.delete()
         return HttpResponseRedirect(self.get_success_url(id))
-    
+
     def get_template_names(self):
         return [self.template_name]
-    
+
     def get_success_url(self, id):
         return reverse(self.success_url, kwargs={'pk': id})
 
@@ -189,21 +185,22 @@ class ProductFileAddView(CreateView):
     queryset = File.objects.all()
     form_class = FileForm
     success_url = 'product-details'
-    
+
     def get_context_data(self, **kwargs):
         context = CreateView.get_context_data(self, **kwargs)
         context['product'] = get_object_or_404(Product, pk=self.kwargs['pk'])
         return context
-    
+
     def form_valid(self, form):
         new_file = form.save(commit=False)
         if new_file.obj:
             new_file.product = self.get_context_data()['product']
             new_file.save()
         return HttpResponseRedirect(self.get_success_url())
-    
+
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.get_context_data()['product'].id})
+
 
 def get_file(request, product_id, pk):
     f = get_object_or_404(File, pk=pk)
@@ -218,7 +215,7 @@ class ProductFileDeleteView(DeleteView):
     template_name = 'product/file_delete.html'
     queryset = File.objects.all()
     success_url = 'product-details'
-    
+
     def get_success_url(self):
         return reverse(self.success_url, kwargs={'pk': self.kwargs['product_id']})
 

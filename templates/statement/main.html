@@ -3,71 +3,74 @@
 {% block search-forms %}{% endblock %}
 {% block content %}
     {% block content-header %}
-    <h2>Raport</h2>
+        <h2>Raport</h2>
     {% endblock %}
     <form action="" method="get">
         <table class="report">
-        {{ form.as_table }}
-        <tr>
-            <th></th>
-            <td><input type="submit" value="generuj raport" /></td>
-        </tr>
+            {{ form.as_table }}
+            <tr>
+                <th></th>
+                <td><input type="submit" value="generuj raport"/></td>
+            </tr>
         </table>
     </form>
-    
-    {% if report %}
-    <h2>Wynik</h2>
-    <table>
-        <tr class="row1">
-            <th>Ilość zgłoszeń</th>
-            <th>Koszt sprzętu</th>
-            <th>Koszt usług</th>
-            <th>Koszt dojazdów</th>
-            <th>Koszt całkowity</th>
-        </tr>
-        <tr class="row2">
-            <td class="center">{{ object_list.count }}</td>
-            <td class="center">{{ report.hard|pln }}</td>
-            <td class="center">{{ report.soft|pln }}</td>
-            <td class="center">{{ report.tran|pln }}</td>
-            <td class="center">{{ report.sum|pln }}</td>
-        </tr>
-    </table>
-    
-    <h2>Lista zgłoszeń</h2>
-    {% include 'statement/list_table.html' with product_list=object_list %}
-    {% endif %}
-    
-    <style>
-    .ui-autocomplete-loading { background: white url('{{ STATIC_URL }}images/ui-anim_basic_16x16.gif') right center no-repeat; }
-    </style>
-    
-    <script type="text/javascript">
-    $('#id_all_users').click(function() {
-    	if (this.checked) {
-    		$('input[name=user]').attr('checked', 'checked') }
-    	else {
-    		$('input[name=user]').removeAttr('checked');
-    	}
-    })
 
-    $(function() {
-        $('#id_client_autocomplete').autocomplete({
-            source: "{% url 'client-search' %}",
-            minLength: 2,
-            select: function( event, ui ) {
-                $('#id_client').val(ui.item.id);
+    {% if report %}
+        <h2>Wynik</h2>
+        <table>
+            <tr class="row1">
+                <th>Ilość zgłoszeń</th>
+                <th>Koszt sprzętu</th>
+                <th>Koszt usług</th>
+                <th>Koszt dojazdów</th>
+                <th>Koszt całkowity</th>
+            </tr>
+            <tr class="row2">
+                <td class="center">{{ object_list.count }}</td>
+                <td class="center">{{ report.hard|pln }}</td>
+                <td class="center">{{ report.soft|pln }}</td>
+                <td class="center">{{ report.tran|pln }}</td>
+                <td class="center">{{ report.sum|pln }}</td>
+            </tr>
+        </table>
+
+        <h2>Lista zgłoszeń</h2>
+        {% include 'statement/list_table.html' with product_list=object_list %}
+    {% endif %}
+
+    <style>
+        .ui-autocomplete-loading {
+            background: white url('{{ STATIC_URL }}images/ui-anim_basic_16x16.gif') right center no-repeat;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $('#id_all_users').click(function () {
+            if (this.checked) {
+                $('input[name=user]').attr('checked', 'checked')
             }
-        });
-        $('#id_client_autocomplete').keyup(function() {
-            if ($(this).val().trim() == '') {
+            else {
+                $('input[name=user]').removeAttr('checked');
+            }
+        })
+
+        $(function () {
+            $('#id_client_autocomplete').autocomplete({
+                                                          source: "{% url 'client-search' %}",
+                                                          minLength: 2,
+                                                          select: function (event, ui) {
+                                                              $('#id_client').val(ui.item.id);
+                                                          }
+                                                      });
+            $('#id_client_autocomplete').keyup(function () {
+                if ($(this).val().trim() == '') {
+                    $('#id_client').val('');
+                }
+            })
+            $('#id_client_autocomplete').dblclick(function () {
                 $('#id_client').val('');
-            }
-        })
-        $('#id_client_autocomplete').dblclick(function() {
-            $('#id_client').val('');
-            $('#id_client_autocomplete').val('');
-        })
-    });
+                $('#id_client_autocomplete').val('');
+            })
+        });
     </script>
 {% endblock %}

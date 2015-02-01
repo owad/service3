@@ -1,14 +1,15 @@
 <h3>Nowy załącznik</h3>
 <form action="{% url 'product-file-add' product.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-	<table>
-	{{ form }}
-	<tr>
-	    <td></td>
-	    <td><button class="button" type="submit">Zapisz</button>
-	</tr>
-	</table>
+    <table>
+        {{ form }}
+        <tr>
+            <td></td>
+            <td>
+                <button class="button" type="submit">Zapisz</button>
+        </tr>
+    </table>
 </form>
 <script type="text/javascript">
-$(".button").button();
+    $(".button").button();
 </script>

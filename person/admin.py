@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from person.models import Client
 
-#class UserAdmin(admin.ModelAdmin):
+# class UserAdmin(admin.ModelAdmin):
 #    model = User
 
 class ClientAdmin(admin.ModelAdmin):
@@ -12,7 +12,8 @@ class ClientAdmin(admin.ModelAdmin):
     list_filter = ('company_name', 'city', 'postcode')
     date_hierarchy = 'created'
     list_display_links = ('id', 'first_name', 'last_name', 'company_name')
-    
+
     actions_on_bottom = True
+
 
 admin.site.register(Client, ClientAdmin)

@@ -3,26 +3,26 @@
 {% block search-forms %}{% endblock %}
 {% block content %}
 
-{% if form.errors %}
-<p class="error">Błędna nazwa użytkownika lub hasło. Spróbuj ponownie.</p>
-{% endif %}
-<div class="login-form">
-    <form method="post" action="{% url 'login' %}">{% csrf_token %}
-        <input type="hidden" name="next" value="{% url 'product-list' %}" />
+    {% if form.errors %}
+        <p class="error">Błędna nazwa użytkownika lub hasło. Spróbuj ponownie.</p>
+    {% endif %}
+    <div class="login-form">
+        <form method="post" action="{% url 'login' %}">{% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'product-list' %}"/>
             <table>
-            <tr>
-                <th>{{ form.username.label_tag }}</th>
-                <td>{{ form.username }}</td>
-            </tr>
-            <tr>
-                <th>{{ form.password.label_tag }}</th>
-                <td>{{ form.password }}</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="submit" value="zaloguj" /></td>
-            <tr>
+                <tr>
+                    <th>{{ form.username.label_tag }}</th>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <th>{{ form.password.label_tag }}</th>
+                    <td>{{ form.password }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="zaloguj"/></td>
+                <tr>
             </table>
-    </form>
-</div>
+        </form>
+    </div>
 {% endblock %}

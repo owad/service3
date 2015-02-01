@@ -1,13 +1,15 @@
 <h3>Załączone pliki</h3>
 <ul>
-{% for file in product.file_set.all %}
-<li><a href="{% url 'product-get-file' file.product.id file.id %}">{{ file  }}</a> <a id="delete-product-file{{file.id}}" href="{% url 'product-delete-file' file.product.id file.id %}">usuń</a></li>
-<script type="text/javascript">
-    $("#delete-product-file" + {{ file.id }}).fancybox();
-</script> 
-{% empty %}
-<li>brak załączników</li>
-{% endfor %}
+    {% for file in product.file_set.all %}
+        <li><a href="{% url 'product-get-file' file.product.id file.id %}">{{ file }}</a> <a
+                id="delete-product-file{{ file.id }}" href="{% url 'product-delete-file' file.product.id file.id %}">usuń</a>
+        </li>
+        <script type="text/javascript">
+            $("#delete-product-file" + {{ file.id }}).fancybox();
+        </script>
+    {% empty %}
+        <li>brak załączników</li>
+    {% endfor %}
 </ul>
 <br/>
 <div class="product-add-link">
@@ -16,5 +18,5 @@
 
 
 <script type="text/javascript">
-$("#product-file-add").fancybox();
+    $("#product-file-add").fancybox();
 </script>
